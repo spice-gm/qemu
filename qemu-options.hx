@@ -2006,6 +2006,7 @@ DEF("spice", HAS_ARG, QEMU_OPTION_spice,
     "       [,plaintext-channel=[main|display|cursor|inputs|record|playback]]\n"
     "       [,sasl=on|off][,disable-ticketing=on|off]\n"
     "       [,password=<string>][,password-secret=<secret-id>]\n"
+    "       [,ticket-handler=<string>]\n"
     "       [,image-compression=[auto_glz|auto_lz|quic|glz|lz|off]]\n"
     "       [,jpeg-wan-compression=[auto|never|always]]\n"
     "       [,zlib-glz-wan-compression=[auto|never|always]]\n"

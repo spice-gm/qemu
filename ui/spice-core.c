@@ -420,6 +420,9 @@ static QemuOptsList qemu_spice_opts = {
             .name = "password-secret",
             .type = QEMU_OPT_STRING,
         },{
+            .name = "ticket-handler",
+            .type = QEMU_OPT_STRING,
+        },{
             .name = "disable-ticketing",
             .type = QEMU_OPT_BOOL,
         },{
@@ -642,7 +645,7 @@ static void qemu_spice_init(void)
     QemuOpts *opts = QTAILQ_FIRST(&qemu_spice_opts.head);
     char *password = NULL;
     const char *passwordSecret;
-    const char *str, *x509_dir, *addr,
+    const char *str, *x509_dir, *addr, *ticket_handler,
         *x509_key_password = NULL,
         *x509_dh_file = NULL,
         *tls_ciphers = NULL;
@@ -690,6 +693,11 @@ static void qemu_spice_init(void)
                         "use 'password-secret' instead");
             password = g_strdup(str);
         }
+    }
+
+    ticket_handler = qemu_opt_get(opts, "ticket-handler");
+    if (!ticket_handler) {
+        ticket_handler = "sm2";
     }
 
     if (tls_port) {
@@ -753,9 +761,11 @@ static void qemu_spice_init(void)
                              x509_dh_file,
                              tls_ciphers);
     }
+    spice_server_set_ticket_handler(spice_server, ticket_handler);
     if (password) {
         qemu_spice.set_passwd(password, false, false);
     }
+    spice_server_set_ticket_handler(spice_server, ticket_handler);
     if (qemu_opt_get_bool(opts, "sasl", 0)) {
         if (spice_server_set_sasl(spice_server, 1) == -1) {
             error_report("spice: failed to enable sasl");
